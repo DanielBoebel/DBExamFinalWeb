@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using DBExamFinalWeb.Models;
 
 namespace DBExamFinalWeb.Controllers
 {
-    public class LoginController : Controller
-    {
+	public class LoginController : Controller
+	{
 
-		private DBExamFinalWeb.Models.DBFinalProjectWebEntities1 db = new Models.DBFinalProjectWebEntities1();
+		private DBFinalProjectWebEntities1 db = new DBFinalProjectWebEntities1();
 
-        // GET: Login
-        public ActionResult Index()
-        {
-            return View();
-        }
+		// GET: Login
+		public ActionResult Index()
+		{
+			return View();
+		}
 
 		[HttpPost]
 		public ActionResult Index(string username, string password)
@@ -35,7 +36,7 @@ namespace DBExamFinalWeb.Controllers
 				{
 					return View();
 				}
-			}catch(Exception e)
+			} catch (Exception e)
 			{
 				return View();
 			}
@@ -47,9 +48,24 @@ namespace DBExamFinalWeb.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult Signup(string first_name, string last_name, string username, string password, int age, string gender)
+		public ActionResult Signup([Bind(Include ="first_name, last_name, username, password, age, gender")]Users user)
 		{
-			return View();
+			try
+			{
+				if (ModelState.IsValid)
+				{
+					db.Users.Add(user);
+					db.SaveChanges();
+					return RedirectToAction("Index");
+				}
+			}
+			catch (Exception e)
+			{
+				//Log the error (uncomment dex variable name and add a line here to write a log.
+				ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+			}
+
+			return View(user);
 		}
 
 
